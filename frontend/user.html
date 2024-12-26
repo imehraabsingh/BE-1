@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saved Users</title>
+</head>
+<body>
+    <h1>Saved User Data</h1>
+    <ul id="userDataList"></ul>
+
+    <script>
+        async function fetchUserData() {
+            try {
+                const response = await fetch('http://localhost:3000/users');
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const users = await response.json();
+
+                const userDataList = document.getElementById('userDataList');
+                userDataList.innerHTML = '';  // Clear list before appending new data
+                
+                users.forEach(user => {
+                    const listItem = document.createElement('li');
+                    listItem.textContent = `${user.name} - ${user.email}`; // Use template literals correctly
+                    userDataList.appendChild(listItem);
+                });
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        }
+
+        // Call the function on page load
+        fetchUserData();
+    </script>
+</body>
+</html>
