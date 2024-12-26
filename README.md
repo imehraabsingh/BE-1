@@ -2,6 +2,10 @@
 
 A simple user management application using **Node.js**, **Express.js**, and **vanilla JavaScript**. This project demonstrates basic CRUD operations where users can submit their data via a web form, store it in a JSON file, and display it dynamically on the frontend.
 
+# PreView
+<img src="preview1.png" alt="Preview1" width="700">
+<img src="preview2.png" alt="Preview2" width="700">
+
 ## Features
 - Submit user data through a web form.
 - Display a list of all submitted users dynamically.
