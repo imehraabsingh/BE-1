@@ -1,27 +1,31 @@
 const express = require('express');
 const fs = require('fs');
-const app = express();
 const cors = require('cors');
+const app = express();
 
 app.use(cors());
 app.use(express.json());
 
-// POST endpoint to save user data
+// POST - Save User Data
 app.post('/users', (req, res) => {
     const newUser = req.body;
 
-    // Read existing data
     fs.readFile('users.json', (err, data) => {
         let users = [];
         if (!err) {
-            users = JSON.parse(data);
+            try {
+                users = JSON.parse(data);
+            } catch (parseErr) {
+                // If JSON file is corrupt or empty, reset users array
+                users = [];
+            }
         }
-        // Add new user to the list
+
         users.push(newUser);
 
-        // Write updated list back to file
-        fs.writeFile('users.json', JSON.stringify(users, null, 2), (err) => {
-            if (err) {
+        fs.writeFile('users.json', JSON.stringify(users, null, 2), (writeErr) => {
+            if (writeErr) {
+                console.error('Error writing file:', writeErr);
                 res.status(500).send('Error saving data');
             } else {
                 res.status(201).send('User data saved');
@@ -30,19 +34,31 @@ app.post('/users', (req, res) => {
     });
 });
 
-// GET endpoint to retrieve user data
+// GET - Retrieve User Data
 app.get('/users', (req, res) => {
     fs.readFile('users.json', (err, data) => {
         if (err) {
+            if (err.code === 'ENOENT') {
+                // If file doesn't exist, return an empty array
+                return res.json([]);
+            } else {
+                console.error('Error reading file:', err);
+                return res.status(500).send('Error reading data');
+            }
+        }
+
+        try {
+            const users = JSON.parse(data);
+            res.json(users);
+        } catch (parseErr) {
+            console.error('Error parsing JSON:', parseErr);
             res.status(500).send('Error reading data');
-        } else {
-            res.json(JSON.parse(data));
         }
     });
 });
 
-// Start server
+// Start Server
 const PORT = 3000;
 app.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
+    console.log(`Server running at http://localhost:${PORT}`);
 });
